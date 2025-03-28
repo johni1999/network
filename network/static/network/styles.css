@@ -1,0 +1,26 @@
+body {
+    background: #e8f5e9;
+}
+a {
+    color: #81c784;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #4caf50; 
+    text-decoration: underline; 
+}
+
+.like-button {
+    background-color: #4caf50; 
+    color: white; 
+    border: none;
+    padding: 10px 20px; 
+    border-radius: 5px;
+    cursor: pointer; 
+    font-size: 14px; 
+}
+
+.like-button:active {
+    background-color: #388e3c; 
+}

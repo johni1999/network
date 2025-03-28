@@ -1,0 +1,71 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Posts from Users You Follow</h2>
+    
+    <!-- Post feed-->
+    {% if page_obj %}
+        <div class="row justify-content-center">
+            {% for post in page_obj %}
+            <div class="col-12 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a href="{% url 'profile' post.author.username %}">{{ post.author.username }}</a>
+                        </h5>
+                        
+                        <p class="card-text" id="post-content-{{ post.id }}">{{ post.content }}</p>
+                        
+                        <p class="card-text">
+                            <small class="text-muted"><b>Posted:</b> {{ post.created_at }}</small>
+                        </p>
+                        <p class="card-text">
+                            <small id="like-count-{{ post.id }}" class="text-muted"><b>Likes:</b> {{ post.likes_count }}</small>
+                        </p>
+                        
+                        <!-- Like functionality -->          
+                        <button class="like-button" data-post-id="{{ post.id }}" data-url="{% url 'like' post.id %}">
+                            {% if user in post.like_set.all %}
+                                Unlike 👎
+                            {% else %}
+                                Like 👍
+                            {% endif %}
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1">First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    </li>
+                {% endif %}
+
+                <li class="page-item disabled">
+                    <a class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</a>
+                </li>
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% else %}
+        <p class="text-center text-muted">No posts to display.</p>
+    {% endif %}
+</div>
+{% endblock %}

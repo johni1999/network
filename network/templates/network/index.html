@@ -1,0 +1,84 @@
+{% extends "network/layout.html" %}
+
+{% block body %}    
+    {% if user.is_authenticated %}
+    <div class="container" style="max-width: 600px; margin-top: 10px;">
+    <form method="POST">
+        <div class="form-group">
+            {% csrf_token %}
+            <textarea class="form-control" name="post" id="post" rows="3" placeholder="What's on your mind?"></textarea>
+        </div>
+        <button class="btn btn-secondary" type="submit">Post</button>
+    </form>
+    {% else %}
+    <p>Please <a href="{% url 'login' %}">log in</a> to post.</p>
+    {% endif %}
+   </div>
+    <hr>
+    <br>
+    <h2 class="text-center">ALL Posts</h2>
+    <div class="container">
+        <div class="row justify-content-center">
+          {% for post in page_obj %}
+        <div class="col-12 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                <h5 class="card-title"><a href="{% url 'profile' post.author.username %}">{{ post.author.username }}</a></h5>
+                
+                {% if user == post.author %}
+                    <!-- Edit button -->
+                    <div style="position: absolute; top: 10px; right: 10px;">
+                        <button class="btn btn-sm btn-secondary edit-button" data-post-id="{{ post.id }}">Edit</button>
+                    </div>
+                {% endif %}
+                
+                <!-- Post content with a unique ID -->
+                <p class="card-text" id="post-content-{{ post.id }}">{{ post.content }}</p>
+                
+                <p class="card-text"><small class="text-muted"><b>Posted: </b>{{ post.created_at }}</small></p>
+                <p class="card-text"><small id="like-count-{{ post.id }}" class="text-muted"><b>Likes: </b>{{ post.likes_count }}</small></p>
+                
+                <!-- Like button -->
+                 {% if user.is_authenticated %}
+                <button class="like-button" data-post-id="{{ post.id }}">  
+                {% if user in post.like_set.all %}
+                    Unlike 👎
+                {% else %}
+                    Like 👍
+                {% endif %}
+                </button>
+                {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+</div>
+    <!-- Pagination Navigation -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">First</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                </li>
+            {% endif %}
+
+            <li class="page-item disabled">
+                <a class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</a>
+            </li>
+
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endblock %}
+
